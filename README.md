@@ -108,6 +108,13 @@ EMAIL_SENDER=your_name@company.com
 - LLM_PROVIDER, WHISPER_MODEL_SIZE, ENABLE_EMAIL_NOTIFICATION, HF_ENDPOINT, ASR_BACKEND
 说明：compose 使用 --compatibility 以应用 deploy.resources.limits.memory 到非 swarm 环境。
 
+#### 国内网络构建加速与故障排查
+- Dockerfile 已切换 Debian 源为清华镜像，并启用 apt 重试与最小化安装 ffmpeg
+- 如仍卡在 apt：
+  - 尝试 `docker compose build --no-cache`
+  - 检查服务器 DNS/代理；必要时临时 `docker build --network host .`
+  - 重试几次 `apt-get -o Acquire::Retries=3 update`
+
 #### 🖥️ 启动 Web 界面 (推荐)
 这是最直观的使用方式，支持文件上传和知识库问答。
 ```bash
