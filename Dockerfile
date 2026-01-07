@@ -19,9 +19,9 @@ RUN set -eux; \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements-base.txt .
 RUN python -m pip install --upgrade pip setuptools wheel && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir --prefer-binary -r requirements-base.txt
 
 COPY . .
 

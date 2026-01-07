@@ -115,6 +115,10 @@ EMAIL_SENDER=your_name@company.com
   - 检查服务器 DNS/代理；必要时临时 `docker build --network host .`
   - 重试几次 `apt-get -o Acquire::Retries=3 update`
 
+#### 容器录音说明
+- 容器镜像仅支持“客户端录音”（浏览器麦克风）；不安装服务端麦克风依赖（pyaudio/sounddevice/webrtcvad），避免编译失败与体积膨胀
+- 如需服务端录音，请在宿主机运行本地模式（非容器），并安装 PortAudio 与对应 Python 包
+
 #### 🖥️ 启动 Web 界面 (推荐)
 这是最直观的使用方式，支持文件上传和知识库问答。
 ```bash
