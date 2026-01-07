@@ -48,6 +48,10 @@ ai-meeting-assistant/
 
 ### 1. 环境准备
 
+**前置要求**:
+*   **Python**: 3.9, 3.10 或 3.11 (暂不推荐 3.12+, 部分依赖可能未适配)
+*   **操作系统**: macOS (推荐 M系列芯片), Windows, Linux
+
 1.  **安装 Ollama** (用于运行 LLM):
     *   下载并安装 [Ollama](https://ollama.com)。
     *   拉取模型：
@@ -85,6 +89,23 @@ EMAIL_SENDER=your_name@company.com
 
 ### 3. 运行使用
 
+#### 🐳 Docker 部署（推荐）
+在服务器或本地用 Docker 快速运行：
+1. 构建镜像：
+   - docker compose build
+2. 启动服务：
+   - docker compose up -d
+3. 首次拉取模型（使用本地 LLM 时）：
+   - docker exec -it deepmeeting-ollama ollama run qwen2:7b
+4. 打开浏览器访问：
+   - http://服务器IP:8502
+
+默认会挂载以下数据卷：
+- ./data 映射为 /app/data
+- ./output 映射为 /app/output
+环境变量从 .env 注入，可设置：
+- LLM_PROVIDER, WHISPER_MODEL_SIZE, ENABLE_EMAIL_NOTIFICATION, HF_ENDPOINT, ASR_BACKEND
+
 #### 🖥️ 启动 Web 界面 (推荐)
 这是最直观的使用方式，支持文件上传和知识库问答。
 ```bash
@@ -118,4 +139,3 @@ A: 向量库需要先有数据。请先使用 Web 上传录音，或者用 CLI �
 
 **Q: 实时录音报错 `Audio Hardware Not Running`？**
 A: 这是 macOS 权限问题。请不要在 IDE 内置终端运行，请打开系统自带的 Terminal.app 运行命令。
-

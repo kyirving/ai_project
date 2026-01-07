@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: deepmeeting-app
+    ports:
+      - "8502:8502"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+    env_file:
+      - .env
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      WHISPER_MODEL_SIZE: ${WHISPER_MODEL_SIZE:-base}
+      ENABLE_EMAIL_NOTIFICATION: ${ENABLE_EMAIL_NOTIFICATION:-false}
+      HF_ENDPOINT: ${HF_ENDPOINT:-}
+      ASR_BACKEND: ${ASR_BACKEND:-faster_whisper}
+    command:
+      - streamlit
+      - run
+      - web_app.py
+      - --server.port
+      - "8502"
+      - --server.headless
+      - "true"
+      - --server.fileWatcherType
+      - none
+    depends_on:
+      ollama:
+        condition: service_started
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: deepmeeting-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+volumes:
+  ollama:
+
