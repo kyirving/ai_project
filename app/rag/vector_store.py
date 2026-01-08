@@ -1,7 +1,7 @@
 import os
 import shutil
 import app.utils.config as config
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_core.documents import Document
 
 # 尝试导入向量库
@@ -25,10 +25,10 @@ class MeetingKnowledgeBase:
         self.vector_store = None
         
         # 1. 初始化 Embedding 模型
-        print("📚 正在加载本地向量模型 (可能需要下载)...")
-        self.embedding_fn = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={'device': 'cpu'}
+        print("📚 正在加载本地向量模型 (FastEmbed，首次会下载 ONNX 模型)...")
+        # 选择中文/多语言友好的小模型以降低资源与下载量
+        self.embedding_fn = FastEmbedEmbeddings(
+            model_name="BAAI/bge-small-zh-v1.5"
         )
         
         # 2. 尝试初始化向量库

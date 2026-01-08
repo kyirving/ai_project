@@ -9,6 +9,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./output:/app/output
+      - .:/app
     env_file:
       - .env
     environment:

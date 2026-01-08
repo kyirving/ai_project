@@ -3,14 +3,12 @@ langchain
 langchain-community
 langchain-openai
 langchain-ollama
-langchain-huggingface
-sentence-transformers
+fastembed
 faiss-cpu
 pydub
 python-dotenv
 requests
 dashscope
 zhipuai
-torch
 numpy<2.0.0
 pyinstaller
