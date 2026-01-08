@@ -2,7 +2,7 @@ import os
 import shutil
 import app.utils.config as config
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 # 尝试导入向量库
 try:
