@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain_community.chat_models import ChatTongyi, ChatZhipuAI
 from langchain_ollama import ChatOllama
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import app.utils.config as config
 
 class MeetingSummarizer:
