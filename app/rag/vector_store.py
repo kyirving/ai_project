@@ -25,11 +25,9 @@ class MeetingKnowledgeBase:
         self.vector_store = None
         
         # 1. 初始化 Embedding 模型
-        print("📚 正在加载本地向量模型 (FastEmbed，首次会下载 ONNX 模型)...")
-        # 选择中文/多语言友好的小模型以降低资源与下载量
-        self.embedding_fn = FastEmbedEmbeddings(
-            model_name="BAAI/bge-small-zh-v1.5"
-        )
+        print("📚 正在加载向量模型 (FastEmbed)")
+        model_name = config.FASTEMBED_MODEL_DIR or "BAAI/bge-small-zh-v1.5"
+        self.embedding_fn = FastEmbedEmbeddings(model_name=model_name)
         
         # 2. 尝试初始化向量库
         self._init_vector_store()
