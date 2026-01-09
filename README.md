@@ -6,6 +6,16 @@ DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将会议录�
 
 ![Architecture](https://img.shields.io/badge/Architecture-Modular-blue) ![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-green) ![License](https://img.shields.io/badge/License-MIT-orange)
 
+## 目录
+- 概览与特性
+- 技术栈与组件
+- 项目结构
+- 部署与运行（Docker 优先）
+- 浏览器录音与安全上下文
+- HuggingFace 缓存与本地模型
+- Linux/CentOS 本机部署
+- 常见问题
+
 ## 🌟 核心功能
 
 *   **🛡️ 极致安全**：从语音识别 (Whisper) 到大模型 (Ollama) 再到向量库 (FAISS/Chroma)，全链路离线运行，网线拔了也能用。
@@ -37,14 +47,30 @@ ai-meeting-assistant/
 └── main.py           # CLI 命令行入口
 ```
 
-*   **ASR**: `faster-whisper` (base/small 模型)
-*   **LLM**: `Ollama` (推荐 qwen2:7b)
-*   **RAG**: `LangChain` + `FAISS` (向量检索)
-*   **Web**: `Streamlit`
+*   **Web**: Streamlit + streamlit-mic-recorder（客户端录音）
+*   **ASR**: faster-whisper（CPU，float32）
+*   **Embeddings**: FastEmbed（BAAI/bge-small-zh-v1.5，ONNX）
+*   **Vector Store**: FAISS（默认）/ Chroma（可选）
+*   **LLM**: Ollama（建议 qwen2:1.5b 或 qwen2:7b），也支持 OpenAI/通义/智谱
 
 ---
 
-## 🚀 快速开始
+## 🚀 部署与运行
+
+### 组件与模型
+
+**核心组件**
+- 前端与交互：Streamlit + streamlit-mic-recorder
+- 语音识别：faster-whisper（本地离线）
+- 嵌入向量：FastEmbed（bge-small-zh-v1.5）
+- 向量库：FAISS（默认），可切换 Chroma
+- 大模型：Ollama（qwen2 系列），也支持 OpenAI/通义/智谱
+
+**模型选择建议**
+- 16GB 服务器：qwen2:7b；资源紧时用 qwen2:1.5b
+- Embeddings：bge-small-zh-v1.5（中文友好，体积适中）
+
+---
 
 ### 1. 环境准备
 
@@ -105,8 +131,24 @@ EMAIL_SENDER=your_name@company.com
 - ./data 映射为 /app/data
 - ./output 映射为 /app/output
 环境变量从 .env 注入，可设置：
-- LLM_PROVIDER, WHISPER_MODEL_SIZE, ENABLE_EMAIL_NOTIFICATION, HF_ENDPOINT, ASR_BACKEND
+- LLM_PROVIDER, WHISPER_MODEL_SIZE, ENABLE_EMAIL_NOTIFICATION, HF_ENDPOINT, ASR_BACKEND, OLLAMA_BASE_URL
 说明：compose 使用 --compatibility 以应用 deploy.resources.limits.memory 到非 swarm 环境。
+
+**容器内 LLM 连接**
+- Docker 环境：`OLLAMA_BASE_URL=http://ollama:11434`
+- 宿主机 Ollama：
+  - macOS/Windows：`OLLAMA_BASE_URL=http://host.docker.internal:11434`
+  - Linux：`OLLAMA_BASE_URL=http://服务器内网IP:11434`（如需，可添加 `extra_hosts: "host.docker.internal:host-gateway"`）
+
+**HuggingFace 模型缓存与加速**
+- 已启用持久缓存与加速下载：
+  - `HF_HOME=/app/data/hf_cache`
+  - `HUGGINGFACE_HUB_CACHE=/app/data/hf_cache`
+  - `HF_HUB_ENABLE_HF_TRANSFER=1`
+- 可选本地模型目录（避免联网下载）：
+  - `FASTEMBED_MODEL_DIR=/app/data/models/bge-small-zh-v1.5`
+  - 预下载示例：
+    - `docker exec -it deepmeeting-app python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='BAAI/bge-small-zh-v1.5', local_dir='/app/data/models/bge-small-zh-v1.5', resume_download=True)"`
 
 #### 国内网络构建加速与故障排查
 - Dockerfile 已切换 Debian 源为清华镜像，并启用 apt 重试与最小化安装 ffmpeg
@@ -118,6 +160,13 @@ EMAIL_SENDER=your_name@company.com
 #### 容器录音说明
 - 容器镜像仅支持“客户端录音”（浏览器麦克风）；不安装服务端麦克风依赖（pyaudio/sounddevice/webrtcvad），避免编译失败与体积膨胀
 - 如需服务端录音，请在宿主机运行本地模式（非容器），并安装 PortAudio 与对应 Python 包
+
+**浏览器录音权限与安全上下文**
+- getUserMedia 仅在 https、localhost 或 127.0.0.1 下可用
+- 远程调试可用 SSH 端口转发：
+  - `ssh -f -N -i /path/to/key.pem -L 8502:localhost:8502 用户@服务器IP`
+  - 经跳板：`ssh -f -N -J 跳板用户@跳板IP -i /path/to/key.pem 路由用户@目标IP -L 8502:localhost:8502`
+- 公网访问建议加 HTTPS（Caddy/Nginx 或 Cloudflare Tunnel/ngrok）
 
 #### 🖥️ 启动 Web 界面 (推荐)
 这是最直观的使用方式，支持文件上传和知识库问答。
@@ -139,6 +188,22 @@ python3 main.py
 python3 main.py
 ```
 *注意：macOS 用户需在外部 Terminal 中运行以获取麦克风权限。*
+
+### 5. Linux/CentOS 本机部署（不使用 Docker）
+适用于需要直接运行在宿主机的场景（客户端录音仍在浏览器端进行）。
+- 安装 Python 3.11（CentOS 7 建议 pyenv + openssl11-devel）
+  - `yum groupinstall -y "Development Tools"`
+  - `yum install -y epel-release openssl11-devel zlib-devel bzip2-devel readline-devel sqlite-devel libffi-devel xz-devel git wget`
+  - `pyenv install 3.11.9 && pyenv global 3.11.9`
+- 虚拟环境与依赖
+  - `python -m venv venv && source venv/bin/activate`
+  - `python -m pip install --upgrade pip setuptools wheel`
+  - `pip install -r requirements-base.txt`
+- ffmpeg（处理非 WAV）
+  - `yum install -y ffmpeg`（仓库无则用静态版）
+- 运行
+  - `streamlit run web_app.py --server.port 8502`
+  - 浏览器访问 `http://localhost:8502` 或通过 SSH 转发在本机访问
 
 ---
 
