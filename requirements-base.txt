@@ -13,3 +13,4 @@ zhipuai
 numpy<2.0.0
 pyinstaller
 faster-whisper
+streamlit-mic-recorder
