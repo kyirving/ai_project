@@ -45,11 +45,8 @@ class MeetingSummarizer:
                 model="glm-4"
             )
         elif provider == "ollama":
-            # 本地 Ollama
-            # 8G 内存推荐使用 qwen2:1.5b 或 gemma:2b
             model_name = "qwen2:1.5b" 
-            print(f"使用本地 Ollama 模型 ({model_name})...")
-            return ChatOllama(model=model_name)
+            return ChatOllama(model=model_name, base_url=config.OLLAMA_BASE_URL)
         else:
             # 默认为 OpenAI 或 兼容 API
             return ChatOpenAI(

@@ -18,6 +18,7 @@ services:
       ENABLE_EMAIL_NOTIFICATION: ${ENABLE_EMAIL_NOTIFICATION:-false}
       HF_ENDPOINT: ${HF_ENDPOINT:-}
       ASR_BACKEND: ${ASR_BACKEND:-faster_whisper}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
     command:
       - streamlit
       - run
