@@ -46,7 +46,9 @@ class MeetingSummarizer:
             )
         elif provider == "ollama":
             model_name = config.OLLAMA_MODEL 
-            return ChatOllama(model=model_name, base_url=config.OLLAMA_BASE_URL)
+            base_url = config.OLLAMA_BASE_URL
+            print(f"🔄 初始化 ChatOllama: model={model_name}, base_url={base_url}")
+            return ChatOllama(model=model_name, base_url=base_url)
         else:
             # 默认为 OpenAI 或 兼容 API
             return ChatOpenAI(
