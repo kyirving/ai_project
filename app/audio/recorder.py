@@ -8,10 +8,13 @@ import os
 import time
 import threading
 import numpy as np
-from app.asr.whisper_client import AudioTranscriber
+import app.utils.config as config
+if config.ASR_PROVIDER == "funasr":
+    from app.asr.funasr_client import AudioTranscriber
+else:
+    from app.asr.whisper_client import AudioTranscriber
 from app.llm.summarizer import MeetingSummarizer
 from app.utils.notifier import EmailNotifier
-import app.utils.config as config
 
 class RealtimeAssistant:
     def __init__(self, transcriber, summarizer, notifier, knowledge_base=None):

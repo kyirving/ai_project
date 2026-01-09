@@ -1,4 +1,8 @@
 faster-whisper
+funasr
+modelscope
+torch
+torchaudio
 langchain
 langchain-community
 langchain-openai
@@ -11,7 +15,6 @@ python-dotenv
 requests
 dashscope
 zhipuai
-torch
 numpy<2.0.0
 pyinstaller
 pyaudio

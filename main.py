@@ -1,11 +1,14 @@
 import os
 import sys
-from app.asr.whisper_client import AudioTranscriber
+import app.utils.config as config
+if config.ASR_PROVIDER == "funasr":
+    from app.asr.funasr_client import AudioTranscriber
+else:
+    from app.asr.whisper_client import AudioTranscriber
 from app.llm.summarizer import MeetingSummarizer
 from app.utils.notifier import EmailNotifier
 from app.audio.recorder import RealtimeAssistant
 from app.rag.vector_store import MeetingKnowledgeBase
-import app.utils.config as config
 
 def main():
     """
@@ -53,12 +56,19 @@ def main():
         # 初始化语音识别模型 (本地运行)
         # 尝试使用 tiny 模型以提高下载成功率
         transcriber = AudioTranscriber(model_size="tiny")
+        print("语音识别模型初始化完成。")
+
         # 初始化摘要生成器
         summarizer = MeetingSummarizer(provider=config.LLM_PROVIDER)
+        print("摘要生成器初始化完成。")
+
         # 初始化邮件通知器
         notifier = EmailNotifier()
+        print("邮件通知器初始化完成。")
         # 初始化知识库
         knowledge_base = MeetingKnowledgeBase()
+        print("知识库初始化完成。")
+        
     except Exception as e:
         print(f"初始化失败: {e}")
         print("请检查 .env 配置或依赖安装情况。")
@@ -91,10 +101,14 @@ def main():
                 transcript = f.read()
         else:
             try:
-                transcript = transcriber.transcribe(audio_path)
+                # Add ASR provider information to transcribe output for better debugging and tracking
+                transcript = transcriber.transcribe(audio_path, provider=config.ASR_PROVIDER)
                 # 保存转录文本
+
+                # LLM 模型分析优化生成的文本
+                optimized_transcript = summarizer.optimize_transcript(transcript)
                 with open(output_transcript_path, "w", encoding="utf-8") as f:
-                    f.write(transcript)
+                    f.write(optimized_transcript)
                 print(f"转录完成，已保存至 {output_transcript_path}")
             except Exception as e:
                 print(f"文件 {audio_file} 转录失败: {e}")

@@ -37,6 +37,8 @@ class MeetingSummarizer:
         """
         根据配置获取 LLM 实例。
         """
+        print(f"🔄 初始化 LLM: provider={provider}")
+
         if provider == "tongyi":
             return ChatTongyi(api_key=config.DASHSCOPE_API_KEY)
         elif provider == "glm":
@@ -66,3 +68,6 @@ class MeetingSummarizer:
         final_prompt = self.prompt.format(text=text)
         response = self.llm.invoke(final_prompt)
         return response.content
+
+
+    

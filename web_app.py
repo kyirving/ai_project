@@ -3,8 +3,11 @@ import os
 import sys
 from app.rag.vector_store import MeetingKnowledgeBase
 from app.llm.summarizer import MeetingSummarizer
-from app.asr.whisper_client import AudioTranscriber
 import app.utils.config as config
+if config.ASR_PROVIDER == "funasr":
+    from app.asr.funasr_client import AudioTranscriber
+else:
+    from app.asr.whisper_client import AudioTranscriber
 
 # 设置页面配置
 st.set_page_config(page_title="DeepMeeting 智能会议助手", page_icon="🎙️", layout="wide")
@@ -27,7 +30,6 @@ summarizer = get_summarizer()
 
 import time
 from streamlit_mic_recorder import mic_recorder
-from app.asr.whisper_client import AudioTranscriber
 from app.utils.notifier import EmailNotifier
 
 # ... (保持 imports 不变)
