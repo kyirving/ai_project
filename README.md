@@ -6,16 +6,6 @@ DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将会议录�
 
 ![Architecture](https://img.shields.io/badge/Architecture-Modular-blue) ![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-green) ![License](https://img.shields.io/badge/License-MIT-orange)
 
-## 目录
-- 概览与特性
-- 技术栈与组件
-- 项目结构
-- 部署与运行（Docker 优先）
-- 浏览器录音与安全上下文
-- HuggingFace 缓存与本地模型
-- Linux/CentOS 本机部署
-- 常见问题
-
 ## 🌟 核心功能
 
 *   **🛡️ 极致安全**：从语音识别 (Whisper) 到大模型 (Ollama) 再到向量库 (FAISS/Chroma)，全链路离线运行，网线拔了也能用。
@@ -23,10 +13,6 @@ DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将会议录�
 *   **🖥️ 可视化 Web 界面**：内置 Streamlit 管理后台，支持上传文件、查看历史记录和智能问答。
 *   **🎙️ 实时会议助手**：支持实时监听麦克风，语音转文字上屏，并自动生成纪要。
 *   **📧 自动化工作流**：会议结束后自动发送邮件通知给相关人员。
-
-## ✨ 开发工具
-
-本项目由 **Trae IDE** 辅助开发，核心代码由 **Solo Builder** 智能生成。这展示了 AI 时代的全新开发范式：人机结对编程 (Pair Programming)。
 
 ---
 
