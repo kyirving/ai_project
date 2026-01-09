@@ -45,7 +45,7 @@ class MeetingSummarizer:
                 model="glm-4"
             )
         elif provider == "ollama":
-            model_name = "qwen2:1.5b" 
+            model_name = config.OLLAMA_MODEL 
             return ChatOllama(model=model_name, base_url=config.OLLAMA_BASE_URL)
         else:
             # 默认为 OpenAI 或 兼容 API

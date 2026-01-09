@@ -16,6 +16,7 @@ MODE = os.getenv("MODE", "file").lower()
 # LLM 配置
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")  # openai, tongyi, glm
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2:1.5b")
 
 # OpenAI / 兼容 API
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
