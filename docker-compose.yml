@@ -19,6 +19,9 @@ services:
       HF_ENDPOINT: ${HF_ENDPOINT:-}
       ASR_BACKEND: ${ASR_BACKEND:-faster_whisper}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      HF_HOME: /app/data/hf_cache
+      HUGGINGFACE_HUB_CACHE: /app/data/hf_cache
+      HF_HUB_ENABLE_HF_TRANSFER: "1"
     command:
       - streamlit
       - run
