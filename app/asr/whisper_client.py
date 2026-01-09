@@ -42,6 +42,7 @@ class AudioTranscriber:
         segments, info = self.model.transcribe(
             audio_path, 
             beam_size=5,
+            language="zh",                  # 强制中文
             vad_filter=True,                # 开启 VAD
             vad_parameters=dict(min_silence_duration_ms=500), # 调整 VAD 敏感度
             condition_on_previous_text=False, # 减少复读
