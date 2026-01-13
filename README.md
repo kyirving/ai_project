@@ -50,7 +50,11 @@ ai-meeting-assistant/
     ```bash
     # 强烈建议使用虚拟环境，避免系统 Python 的 PEP 668 限制
     python3 -m venv .venv
+
     source .venv/bin/activate
+    
+    pip install --upgrade pip
+    
     pip install -r requirements.txt
     ```
 
