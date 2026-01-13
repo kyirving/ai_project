@@ -10,6 +10,8 @@ langchain-ollama
 langchain-huggingface
 sentence-transformers
 faiss-cpu
+chromadb
+langchain-chroma
 pydub
 python-dotenv
 requests

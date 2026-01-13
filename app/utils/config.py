@@ -58,6 +58,9 @@ WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "base")
 # 向量模型本地路径（可选，设置后优先使用本地目录，避免联网下载）
 FASTEMBED_MODEL_DIR = os.getenv("FASTEMBED_MODEL_DIR", "").strip()
 
+# 向量库选择：auto/chroma/faiss
+VECTOR_STORE = os.getenv("VECTOR_STORE", "auto").lower()
+
 # 邮件配置
 ENABLE_EMAIL_NOTIFICATION = os.getenv("ENABLE_EMAIL_NOTIFICATION", "false").lower() == "true"
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.exmail.qq.com")

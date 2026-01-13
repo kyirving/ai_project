@@ -34,9 +34,56 @@ class MeetingKnowledgeBase:
 
     def _init_vector_store(self):
         """
-        初始化向量库，优先 Chroma，失败则降级 FAISS
+        初始化向量库。
+        当 VECTOR_STORE=chroma 时强制使用 Chroma；
+        当 VECTOR_STORE=faiss 时强制使用 FAISS；
+        当 VECTOR_STORE=auto 时优先 Chroma，失败则降级 FAISS。
         """
-        # 优先尝试 Chroma
+        pref = getattr(config, "VECTOR_STORE", "auto")
+        if pref == "chroma":
+            if not HAS_CHROMA:
+                print("❌ 未安装 ChromaDB 或 langchain-chroma")
+                return
+            try:
+                print("尝试初始化 ChromaDB...")
+                chroma_dir = os.path.join(self.persist_dir, "chroma")
+                self.vector_store = Chroma(
+                    persist_directory=chroma_dir,
+                    embedding_function=self.embedding_fn,
+                    collection_name="meeting_records"
+                )
+                self.store_type = "chroma"
+                print(f"✅ ChromaDB 初始化成功: {chroma_dir}")
+                return
+            except Exception as e:
+                print(f"❌ ChromaDB 初始化失败: {e}")
+                return
+        
+        if pref == "faiss":
+            if not HAS_FAISS:
+                print("❌ 未安装 FAISS")
+                return
+            try:
+                print("尝试初始化 FAISS...")
+                faiss_dir = os.path.join(self.persist_dir, "faiss")
+                if os.path.exists(faiss_dir):
+                    self.vector_store = FAISS.load_local(
+                        faiss_dir, 
+                        self.embedding_fn,
+                        allow_dangerous_deserialization=True
+                    )
+                    print(f"🗄️  加载现有 FAISS 索引: {faiss_dir}")
+                else:
+                    print("🆕 FAISS 索引将会在第一次添加数据时创建")
+                    self.vector_store = None
+                self.store_type = "faiss"
+                print("✅ FAISS 模式已启用")
+                return
+            except Exception as e:
+                print(f"❌ FAISS 初始化失败: {e}")
+                return
+        
+        # auto 模式：优先 Chroma，失败则降级 FAISS
         if HAS_CHROMA:
             try:
                 print("尝试初始化 ChromaDB...")
@@ -52,7 +99,6 @@ class MeetingKnowledgeBase:
             except Exception as e:
                 print(f"⚠️ ChromaDB 初始化失败 ({e})，尝试降级到 FAISS...")
         
-        # 降级尝试 FAISS
         if HAS_FAISS:
             try:
                 print("尝试初始化 FAISS...")
@@ -66,13 +112,13 @@ class MeetingKnowledgeBase:
                     print(f"🗄️  加载现有 FAISS 索引: {faiss_dir}")
                 else:
                     print("🆕 FAISS 索引将会在第一次添加数据时创建")
-                    self.vector_store = None # FAISS 需要有数据才能初始化
-                
+                    self.vector_store = None
                 self.store_type = "faiss"
-                print(f"✅ FAISS 模式已启用")
+                print("✅ FAISS 模式已启用")
                 return
             except Exception as e:
                 print(f"❌ FAISS 初始化失败: {e}")
+                return
         
         print("❌ 无法初始化任何向量库 (请检查 requirements.txt)")
 
