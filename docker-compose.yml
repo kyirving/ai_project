@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./debug:/app/debug
+    env_file:
+      - ./.env.development
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
