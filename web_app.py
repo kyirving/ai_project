@@ -19,7 +19,35 @@ st.markdown("---")
 # 初始化资源 (使用缓存避免重复加载)
 @st.cache_resource
 def get_knowledge_base():
-    return MeetingKnowledgeBase()
+    """
+    初始化知识库资源，并在 Streamlit 中友好地展示错误堆栈。
+    """
+    try:
+        return MeetingKnowledgeBase()
+    except Exception as e:
+        st.error(f"知识库初始化失败: {e}")
+        import traceback
+        st.code(traceback.format_exc())
+        class EmptyKB:
+            """
+            知识库初始化失败时的占位实现，避免页面后续逻辑崩溃。
+            """
+            def add_meeting(self, *args, **kwargs):
+                """
+                兼容 add_meeting 调用，不执行任何操作。
+                """
+                return None
+            def search(self, *args, **kwargs):
+                """
+                兼容搜索接口，返回空结果。
+                """
+                return []
+            def query_with_llm(self, *args, **kwargs):
+                """
+                兼容 RAG 查询接口，返回提示信息。
+                """
+                return "知识库初始化失败，无法回答。"
+        return EmptyKB()
 
 @st.cache_resource
 def get_summarizer():

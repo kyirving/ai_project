@@ -56,7 +56,7 @@ ASR_FUNASR_PUNC = os.getenv("ASR_FUNASR_PUNC", "ct-punc-zh")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "base")
 
 # 向量模型本地路径（可选，设置后优先使用本地目录，避免联网下载）
-FASTEMBED_MODEL_DIR = os.getenv("FASTEMBED_MODEL_DIR", "").strip()
+FASTEMBED_MODEL_DIR = os.getenv("FASTEMBED_MODEL_DIR", "BAAI/bge-small-zh-v1.5").strip()
 
 # 向量库选择：auto/chroma/faiss
 VECTOR_STORE = os.getenv("VECTOR_STORE", "auto").lower()

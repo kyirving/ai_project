@@ -1,7 +1,9 @@
 import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 import shutil
 import app.utils.config as config
-from langchain_community.embeddings import FastEmbedEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings, HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 # 尝试导入向量库
@@ -24,13 +26,23 @@ class MeetingKnowledgeBase:
         self.store_type = None # "chroma" or "faiss"
         self.vector_store = None
         
-        # 1. 初始化 Embedding 模型
         print("📚 正在加载向量模型 (FastEmbed)")
-        model_name = config.FASTEMBED_MODEL_DIR or "BAAI/bge-small-zh-v1.5"
-        self.embedding_fn = FastEmbedEmbeddings(model_name=model_name)
+        print(f"HF_ENDPOINT 设置为: {os.environ['HF_ENDPOINT']}")
+        self.embedding_fn = self._init_embedding()
         
         # 2. 尝试初始化向量库
         self._init_vector_store()
+
+    def _init_embedding(self):
+        """
+        初始化文本向量嵌入模型，优先使用 FastEmbed；若模型不受支持则自动回退到 Sentence-Transformers。
+        """
+        model_name = getattr(config, "FASTEMBED_MODEL_DIR", "") or "BAAI/bge-small-zh-v1.5"
+        try:
+            return FastEmbedEmbeddings(model_name=model_name)
+        except Exception as e:
+            print(f"⚠️ FastEmbed 不支持该模型，回退到 Sentence-Transformers: {model_name} ({e})\r\r\r")
+            return HuggingFaceEmbeddings(model_name=model_name)
 
     def _init_vector_store(self):
         """
@@ -40,6 +52,7 @@ class MeetingKnowledgeBase:
         当 VECTOR_STORE=auto 时优先 Chroma，失败则降级 FAISS。
         """
         pref = getattr(config, "VECTOR_STORE", "auto")
+        print(f"VECTOR_STORE 配置为: {pref}")
         if pref == "chroma":
             if not HAS_CHROMA:
                 print("❌ 未安装 ChromaDB 或 langchain-chroma")

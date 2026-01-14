@@ -12,6 +12,7 @@ sentence-transformers
 faiss-cpu
 chromadb
 langchain-chroma
+fastembed
 pydub
 python-dotenv
 requests
