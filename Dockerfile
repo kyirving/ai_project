@@ -1,20 +1,18 @@
+# syntax=docker/dockerfile:1.6
 FROM python:3.11-slim
 
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple
 
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache/apt \
+    sed -i 's|deb.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list || true && \
+    apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       ffmpeg \
-      ca-certificates \
-      build-essential \
-      cmake \
-      portaudio19-dev \
-      libsndfile1 \
-      libsndfile1-dev \
-      libgomp1 && \
+      ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt

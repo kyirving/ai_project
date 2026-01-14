@@ -1,0 +1,26 @@
+# Git & IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Project data (do not send to build context)
+data/
+output/
+debug/
+
+# Build artifacts
+dist/
+build/
+*.whl
+*.egg-info/
+
+# Misc
+.trae/
+.DS_Store
