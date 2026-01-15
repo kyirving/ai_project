@@ -2,8 +2,7 @@
 
 **🔒 100% 本地化部署，数据隐私零泄露！**
 
-DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将会议录音转录为文字并生成摘要，更内置了 **RAG (检索增强生成)** 知识库，让你的历史会议记录变成可交互、可查询的“企业大脑”。
-
+DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将在线会议以及会议录音转录为文字并生成会议纪要，更内置了 **RAG (检索增强生成)** 知识库，让你的历史会议记录变成可交互、可查询的“企业大脑”。
 ![Architecture](https://img.shields.io/badge/Architecture-Modular-blue) ![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-green) ![License](https://img.shields.io/badge/License-MIT-orange)
 
 ## 🌟 核心功能
@@ -15,7 +14,6 @@ DeepMeeting 是一款全栈式 AI 会议解决方案。它不仅能将会议录�
 *   **📧 自动化工作流**：会议结束后自动发送邮件通知给相关人员。
 
 ---
-
 ## 🛠️ 技术架构
 
 本项目采用模块化设计，易于扩展和维护：
@@ -31,11 +29,32 @@ ai-meeting-assistant/
 ├── web_app.py        # Streamlit Web 入口
 └── main.py           # CLI 命令行入口
 ```
-
 ---
 
-## 🚀 部署与运行
-### 1. 环境准备
+## 🚀 快速开始
+
+### 1、 Docker 部署（支持 Tongyi/openai/glm/本地）
+**快速启动（测试阶段使用 Tongyi）**
+```bash
+# 设置通义千问 API Key
+echo "DASHSCOPE_API_KEY=你的Key" >> env.development
+# 构建并启动
+docker compose build
+docker compose up -d
+# 访问 Web
+open http://localhost:8501
+```
+
+**切换到 Ollama（本地大模型）**
+```ini
+# env.development 中设置
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2:1.5b
+```
+> Ollama 容器可按需添加到 compose；当前默认使用 Tongyi 测试。
+
+### 2、 本机部署
 
 **前置要求**:
 *   **Python**: 3.9, 3.10 或 3.11 (暂不推荐 3.12+, 部分依赖可能未适配)
@@ -48,7 +67,6 @@ ai-meeting-assistant/
 
 2.  **安装 Python 依赖**:
     ```bash
-    # 强烈建议使用虚拟环境，避免系统 Python 的 PEP 668 限制
     python3 -m venv .venv
 
     source .venv/bin/activate
@@ -59,7 +77,6 @@ ai-meeting-assistant/
     ```
 
 ### 2. 配置项目
-
 复制 `.env.development` 为 `.env` 并修改配置（示例）：
 
 ```ini
@@ -89,6 +106,8 @@ EMAIL_SENDER=your_name@company.com
 # ...
 ```
 > 切换 ASR 引擎后，无需改代码。Web 界面和 CLI 会自动按 `.env` 选择 Whisper 或 FunASR。
+
+
 #### 🖥️ 启动 Web 界面 (推荐)
 这是最直观的使用方式，支持文件上传和知识库问答。
 ```bash
@@ -101,6 +120,23 @@ streamlit run web_app.py
 ```bash
 python3 main.py
 ```
+
+### 项目使用示列
+- 在线会议
+![在线会议](static/images/在线会议.png)
+- 智能问答
+![智能问答](static/images/智能问答.png)
+- 会议记录
+![会议记录](static/images/会议记录.png)
+- 上传会议
+![上传会议](static/images/上传会议.png)
+
+**环境变量关键项**
+- ASR_PROVIDER=whisper|funasr（中文推荐 funasr）
+- VECTOR_STORE=chroma|faiss|auto（默认 auto：优先 Chroma，失败回退 FAISS）
+- FASTEMBED_MODEL_DIR=BAAI/bge-small-zh-v1.5（支持自动回退到 sentence-transformers）
+- HF_ENDPOINT=https://hf-mirror.com（国内镜像加速）
+
 程序会自动处理所有文件，生成摘要并存入知识库。
 
 #### 🎙️ 开启实时会议
@@ -109,3 +145,5 @@ python3 main.py
 python3 main.py
 ```
 *注意：macOS 用户需在外部 Terminal 中运行以获取麦克风权限。*
+
+---
